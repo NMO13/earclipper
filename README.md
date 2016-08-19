@@ -16,7 +16,7 @@ Performance is, at the moment, improvable. The complexity inceases exponentially
 
 ##Notes
 
-Polygons have to be specified in counter clockwise orientation. Each point of the polygon has to lie on the same plane. Holes have to be specified in clockwise orientation. A normal vector is necessary in order to decide which side is front and which is back of the polygon. This normal can either be passed manually or it is calculated automatically, if none was passed. The automatic calculation uses Newell's method in order to calculate the normal. This is an O(n) operation, so it would be cheaper to calculate the normal by hand.
+Polygons have to be specified in counter clockwise orientation. Each point of the polygon has to lie on the same plane. Holes have to be specified in clockwise orientation. A normal vector is necessary in order to decide which side is front and which is back of the polygon. This normal can either be passed manually or it is calculated automatically, if none was passed. The automatic calculation uses Newell's method in order to calculate the normal. This is an O(n) operation, so it is cheaper to calculate the normal by hand.
 
 ##Usage
 
