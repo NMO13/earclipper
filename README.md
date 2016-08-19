@@ -12,5 +12,5 @@ Earclipper is a library for triangulating arbitrary convex/non-convex polygons. 
 - Holes: Supports arbitrary complicated and arbitrary many holes.
 
 ##Performance
-Performance is, at the moment, not very good. The complexity inceases exponentially with the number of holes.
+Performance is, at the moment, improvable. The complexity inceases exponentially with the number of holes. Using some kind of binary partitioning (BSP-Tree, Octree) would speed up the algorithm dramatically.
 
