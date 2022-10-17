@@ -20,7 +20,7 @@ Polygons have to be specified in counter clockwise orientation. Each point of th
 
 ## Usage
 
-```
+```c#
 //Example 1
 // specify polygon points in CCW order
 List<Vector3m> points = new List<Vector3m>(){new Vector3m(0, 0, 0), new Vector3m(1, 0, 0), new Vector3m(0, 1, 0)};
