@@ -2,7 +2,7 @@
 
 ## Description
 
-Earclipper is a library for triangulating arbitrary convex/non-convex polygons. Earclipper is written in C# and implements the paper [Triangulation By EarClipping] (https://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf) by David Eberly.
+Earclipper is a triangulation library for triangulating arbitrary convex/non-convex polygons. Earclipper is written in C# and implements the paper [Triangulation By EarClipping] (https://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf) by David Eberly.
 
 ## Features
 
