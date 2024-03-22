@@ -15,9 +15,7 @@ namespace EarClipperLib
             var res = (v0 - v1).Cross(v2 - v1);
             if (res.LengthSquared() == 0)
                 return 0;
-            if (res.X.Sign != normal.X.Sign || res.Y.Sign != normal.Y.Sign || res.Z.Sign != normal.Z.Sign)
-                return 1;
-            return -1;
+            return -res.Dot(normal).Sign;
         }
 
         // Is testPoint between a and b in ccw order?
