@@ -36,6 +36,15 @@ namespace EarClipper
             PrintTriangles(res);
 
             //Example 4
+            points = new List<Vector3m>() {new Vector3m(10, -1, 0), new Vector3m(11, 3.5, 0), new Vector3m(9, 3, 0), new Vector3m(6, 5, 0), new Vector3m(5, 0.5, 0), 
+                new Vector3m(2, 1, 0), new Vector3m(0.5, 4, 0),
+            new Vector3m(0, 0, 0), new Vector3m(3, -2, 0), new Vector3m(6, 1, 0)};
+            earClipping.SetPoints(points);
+            earClipping.Triangulate();
+            res = earClipping.Result;
+            PrintTriangles(res);
+
+            //Example 5
             points = new List<Vector3m>()
             {
                 new Vector3m(0, 0, 0), new Vector3m(5, 0, 0), new Vector3m(5, 5, 5), new Vector3m(3, 3, 3), new Vector3m(2, 6, 6), new Vector3m(1, 3, 3), new Vector3m(0, 5, 5)

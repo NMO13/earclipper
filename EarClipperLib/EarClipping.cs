@@ -127,20 +127,25 @@ namespace EarClipperLib
                         Result.Add(cur.Origin);
                         Result.Add(cur.Next.Origin);
 
-                        // Check if prev and next are still nonconvex. If not, then remove from non convex list
-                        if (IsConvex(cur.Prev))
+                        bool prevNoneConvexBefore = !IsConvex(cur.Prev);
+                        bool nextNoneConvexBefore = !IsConvex(cur.Next);
+                        _mainPointList.Remove(cur);
+
+                        // Note: If prev or next were non-convex before clipping, they can either remain non-convex or become convex.
+                        // If they were convex before, they are still convex after clippin.
+
+                        // Check if prev and next are still non-convex. If they are convex now, then remove them from non-convex list.
+                        if (_mainPointList.PointCount > 2 && prevNoneConvexBefore && IsConvex(cur.Prev))
                         {
                             int index = nonConvexPoints.FindIndex(x => x == cur.Prev);
-                            if (index >= 0)
-                                nonConvexPoints.RemoveAt(index);
+                            nonConvexPoints.RemoveAt(index);
                         }
-                        if (IsConvex(cur.Next))
+
+                        if (_mainPointList.PointCount > 2 && nextNoneConvexBefore && IsConvex(cur.Next))
                         {
                             int index = nonConvexPoints.FindIndex(x => x == cur.Next);
-                            if (index >= 0)
-                                nonConvexPoints.RemoveAt(index);
+                            nonConvexPoints.RemoveAt(index);
                         }
-                        _mainPointList.Remove(cur);
                         break;
                     }
                 }
