@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
+using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.SolverFoundation.Common;
+using PeterO.Numbers;
 
 namespace EarClipperLib
 {
@@ -12,7 +9,7 @@ namespace EarClipperLib
     {
         internal DynamicProperties DynamicProperties = new DynamicProperties();
 
-        public Vector3m(Rational x, Rational y, Rational z)
+        public Vector3m(ERational x, ERational y, ERational z)
         {
             X = x;
             Y = y;
@@ -31,15 +28,15 @@ namespace EarClipperLib
             return new Vector3m(0, 0, 0);
         }
 
-        public Rational X { get; set; }
+        public ERational X { get; set; }
 
         public Vector3m Absolute()
         {
-            return new Vector3m(X.AbsoluteValue, Y.AbsoluteValue, Z.AbsoluteValue);
+            return new Vector3m(X.Abs(), Y.Abs(), Z.Abs());
         }
 
-        public Rational Y { get; set; }
-        public Rational Z { get; set; }
+        public ERational Y { get; set; }
+        public ERational Z { get; set; }
 
         public object Clone()
         {
@@ -66,22 +63,22 @@ namespace EarClipperLib
             return new Vector3m(this.X - a.X, this.Y - a.Y, this.Z - a.Z);
         }
 
-        public Vector3m Times(Rational a)
+        public Vector3m Times(ERational a)
         {
             return new Vector3m(this.X * a, this.Y * a, this.Z * a);
         }
 
-        public Vector3m DividedBy(Rational a)
+        public Vector3m DividedBy(ERational a)
         {
             return new Vector3m(this.X / a, this.Y / a, this.Z / a);
         }
 
-        public Rational Dot(Vector3m a)
+        public ERational Dot(Vector3m a)
         {
             return this.X * a.X + this.Y * a.Y + this.Z * a.Z;
         }
 
-        public Vector3m Lerp(Vector3m a, Rational t)
+        public Vector3m Lerp(Vector3m a, ERational t)
         {
             return this.Plus(a.Minus(this).Times(t));
         }
@@ -91,26 +88,26 @@ namespace EarClipperLib
             return System.Math.Sqrt(Dot(this).ToDouble());
         }
 
-        public Rational LengthSquared()
+        public ERational LengthSquared()
         {
             return Dot(this);
         }
 
         public Vector3m ShortenByLargestComponent()
         {
-            if (this.LengthSquared() == 0)
+            if (this.LengthSquared().IsZero)
                 return new Vector3m(0, 0, 0);
             var absNormal = Absolute();
-            Rational largestValue = 0;
-            if (absNormal.X >= absNormal.Y && absNormal.X >= absNormal.Z)
+            ERational largestValue = 0;
+            if (absNormal.X.CompareTo(absNormal.Y)>=0 && absNormal.X.CompareTo(absNormal.Z)>=0)
                 largestValue = absNormal.X;
-            else if (absNormal.Y >= absNormal.X && absNormal.Y >= absNormal.Z)
+            else if (absNormal.Y.CompareTo(absNormal.X)>=0 && absNormal.Y.CompareTo(absNormal.Z)>=0)
                 largestValue = absNormal.Y;
             else
             {
                 largestValue = absNormal.Z;
             }
-            Debug.Assert(largestValue != 0);
+            Debug.Assert(!largestValue.IsZero);
             return this / largestValue;
         }
 
@@ -125,7 +122,7 @@ namespace EarClipperLib
 
         internal bool IsZero()
         {
-            return X == 0 && Y == 0 && Z == 0;
+            return X.IsZero && Y.IsZero && Z.IsZero;
         }
 
         public override bool Equals(object obj)
@@ -155,12 +152,12 @@ namespace EarClipperLib
             return a.Minus(b);
         }
 
-        public static Vector3m operator *(Vector3m a, Rational d)
+        public static Vector3m operator *(Vector3m a, ERational d)
         {
             return new Vector3m(a.X * d, a.Y * d, a.Z * d);
         }
 
-        public static Vector3m operator /(Vector3m a, Rational d)
+        public static Vector3m operator /(Vector3m a, ERational d)
         {
             return a.DividedBy(d);
         }
@@ -180,7 +177,7 @@ namespace EarClipperLib
         public bool SameDirection(Vector3m he)
         {
             var res = this.Cross(he);
-            return res.X == 0 && res.Y == 0 && res.Z == 0;
+            return res.X.IsZero && res.Y.IsZero && res.Z.IsZero;
         }
     }
 }

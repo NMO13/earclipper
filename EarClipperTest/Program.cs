@@ -1,11 +1,8 @@
-﻿using EarClipperLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
-namespace EarClipper
+using EarClipperLib;
+
+namespace EarClipperTest
 {
     class Program
     {

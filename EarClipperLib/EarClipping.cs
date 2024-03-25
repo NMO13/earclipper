@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.SolverFoundation.Common;
+using PeterO.Numbers;
 
 namespace EarClipperLib
 {
@@ -23,12 +20,14 @@ namespace EarClipperLib
             {
                 throw new ArgumentException("No list or an empty list passed");
             }
+
             if (normal == null)
                 CalcNormal(points);
             else
             {
                 Normal = normal;
             }
+
             _mainPointList = new Polygon();
             LinkAndAddToList(_mainPointList, points);
 
@@ -42,8 +41,9 @@ namespace EarClipperLib
                     _holes.Add(p);
                 }
             }
+
             Result = new List<Vector3m>();
-    }
+        }
 
         // calculating normal using Newell's method
         private void CalcNormal(List<Vector3m> points)
@@ -56,6 +56,7 @@ namespace EarClipperLib
                 normal.Y += (points[i].Z - points[j].Z) * (points[i].X + points[j].X);
                 normal.Z += (points[i].X - points[j].X) * (points[i].Y + points[j].Y);
             }
+
             Normal = normal;
         }
 
@@ -80,6 +81,7 @@ namespace EarClipperLib
                     p0.DynamicProperties.AddProperty(PropertyConstants.IncidentEdges, list);
                     pointCount++;
                 }
+
                 ConnectionEdge current = new ConnectionEdge(p0, polygon);
 
                 first = (i == 0) ? current : first; // remember first
@@ -88,9 +90,11 @@ namespace EarClipperLib
                 {
                     prev.Next = current;
                 }
+
                 current.Prev = prev;
                 prev = current;
             }
+
             first.Prev = prev;
             prev.Next = first;
             polygon.Start = first;
@@ -134,12 +138,14 @@ namespace EarClipperLib
                             if (index >= 0)
                                 nonConvexPoints.RemoveAt(index);
                         }
+
                         if (IsConvex(cur.Next))
                         {
                             int index = nonConvexPoints.FindIndex(x => x == cur.Next);
                             if (index >= 0)
                                 nonConvexPoints.RemoveAt(index);
                         }
+
                         _mainPointList.Remove(cur);
                         break;
                     }
@@ -158,9 +164,11 @@ namespace EarClipperLib
         {
             foreach (var connectionEdge in pointList.GetPolygonCirculator())
             {
-                if (Misc.GetOrientation(connectionEdge.Prev.Origin, connectionEdge.Origin, connectionEdge.Next.Origin, Normal) != 0)
+                if (Misc.GetOrientation(connectionEdge.Prev.Origin, connectionEdge.Origin, connectionEdge.Next.Origin,
+                        Normal) != 0)
                     return false;
             }
+
             return true;
         }
 
@@ -206,6 +214,7 @@ namespace EarClipperLib
                 prev = cur;
                 cur = cur.Next;
             } while (m != cur);
+
             var backEdge = new ConnectionEdge(cur.Origin, insertionEdge.Polygon);
             cur = prev;
             cur.Next = backEdge;
@@ -228,12 +237,14 @@ namespace EarClipperLib
                     (List<ConnectionEdge>)res.DynamicProperties.GetValue(PropertyConstants.IncidentEdges);
                 foreach (var connectionEdge in incidentEdges)
                 {
-                    if (Misc.IsBetween(connectionEdge.Origin, connectionEdge.Next.Origin, connectionEdge.Prev.Origin, M.Origin, Normal) == 1)
+                    if (Misc.IsBetween(connectionEdge.Origin, connectionEdge.Next.Origin, connectionEdge.Prev.Origin,
+                            M.Origin, Normal) == 1)
                     {
                         P = connectionEdge;
                         return;
                     }
                 }
+
                 throw new Exception();
             }
             else
@@ -242,11 +253,12 @@ namespace EarClipperLib
             }
         }
 
-        private ConnectionEdge FindVisiblePoint(Candidate I, List<Polygon> polygons, ConnectionEdge M, Vector3m direction)
+        private ConnectionEdge FindVisiblePoint(Candidate I, List<Polygon> polygons, ConnectionEdge M,
+            Vector3m direction)
         {
             ConnectionEdge P = null;
 
-            if (I.Origin.Origin.X > I.Origin.Next.Origin.X)
+            if (I.Origin.Origin.X.CompareTo(I.Origin.Next.Origin.X) > 0)
             {
                 P = I.Origin;
             }
@@ -280,6 +292,7 @@ namespace EarClipperLib
                     candidates.Add(nonConvexPoint);
                 }
             }
+
             if (candidates.Count == 0)
                 return P;
             return FindMinimumAngle(candidates, m, direction);
@@ -287,7 +300,7 @@ namespace EarClipperLib
 
         private ConnectionEdge FindMinimumAngle(List<ConnectionEdge> candidates, Vector3m M, Vector3m direction)
         {
-            Rational angle = -double.MaxValue;
+            ERational angle = -double.MaxValue;
             ConnectionEdge result = null;
             foreach (var R in candidates)
             {
@@ -296,12 +309,13 @@ namespace EarClipperLib
                 var num = a.Dot(b) * a.Dot(b);
                 var denom = b.Dot(b);
                 var res = num / denom;
-                if (res > angle)
+                if (res.CompareTo(angle) > 0)
                 {
                     result = R;
                     angle = res;
                 }
             }
+
             return result;
         }
 
@@ -314,15 +328,19 @@ namespace EarClipperLib
                     continue;
                 foreach (var connectionEdge in polygons[i].GetPolygonCirculator())
                 {
-                    Rational rayDistanceSquared;
+                    ERational rayDistanceSquared;
                     Vector3m intersectionPoint;
 
-                    if (RaySegmentIntersection(out intersectionPoint, out rayDistanceSquared, M.Origin, direction, connectionEdge.Origin,
-                        connectionEdge.Next.Origin, direction))
+                    if (RaySegmentIntersection(out intersectionPoint, out rayDistanceSquared, M.Origin, direction,
+                            connectionEdge.Origin,
+                            connectionEdge.Next.Origin, direction))
                     {
-                        if (rayDistanceSquared == candidate.currentDistance)  // if this is an M/I edge, then both edge and his twin have the same distance; we take the edge where the point is on the left side
+                        if (rayDistanceSquared ==
+                            candidate
+                                .currentDistance) // if this is an M/I edge, then both edge and his twin have the same distance; we take the edge where the point is on the left side
                         {
-                            if (Misc.GetOrientation(connectionEdge.Origin, connectionEdge.Next.Origin, M.Origin, Normal) == 1)
+                            if (Misc.GetOrientation(connectionEdge.Origin, connectionEdge.Next.Origin, M.Origin,
+                                    Normal) == 1)
                             {
                                 candidate.currentDistance = rayDistanceSquared;
                                 candidate.Origin = connectionEdge;
@@ -330,7 +348,7 @@ namespace EarClipperLib
                                 candidate.I = intersectionPoint;
                             }
                         }
-                        else if (rayDistanceSquared < candidate.currentDistance)
+                        else if (rayDistanceSquared.CompareTo(candidate.currentDistance) < 0)
                         {
                             candidate.currentDistance = rayDistanceSquared;
                             candidate.Origin = connectionEdge;
@@ -339,14 +357,14 @@ namespace EarClipperLib
                         }
                     }
                 }
-
             }
+
             return candidate;
         }
 
         private ConnectionEdge FindLargest(Polygon testHole)
         {
-            Rational maximum = 0;
+            ERational maximum = 0;
             ConnectionEdge maxEdge = null;
             Vector3m v0 = testHole.Start.Origin;
             Vector3m v1 = testHole.Start.Next.Origin;
@@ -357,27 +375,31 @@ namespace EarClipperLib
                 if (Misc.GetOrientation(v0, v1, connectionEdge.Origin, Normal) < 0)
                 {
                     var r = Misc.PointLineDistance(v0, v1, connectionEdge.Origin);
-                    if (r > maximum)
+                    if (r.CompareTo(maximum) > 0)
                     {
                         maximum = r;
                         maxEdge = connectionEdge;
                     }
                 }
             }
+
             if (maxEdge == null)
                 return testHole.Start;
             return maxEdge;
         }
 
-        private bool IsPointInTriangle(Vector3m prevPoint, Vector3m curPoint, Vector3m nextPoint, List<ConnectionEdge> nonConvexPoints)
+        private bool IsPointInTriangle(Vector3m prevPoint, Vector3m curPoint, Vector3m nextPoint,
+            List<ConnectionEdge> nonConvexPoints)
         {
             foreach (var nonConvexPoint in nonConvexPoints)
             {
-                if (nonConvexPoint.Origin == prevPoint || nonConvexPoint.Origin == curPoint || nonConvexPoint.Origin == nextPoint)
+                if (nonConvexPoint.Origin == prevPoint || nonConvexPoint.Origin == curPoint ||
+                    nonConvexPoint.Origin == nextPoint)
                     continue;
                 if (Misc.PointInOrOnTriangle(prevPoint, curPoint, nextPoint, nonConvexPoint.Origin, Normal))
                     return true;
             }
+
             return false;
         }
 
@@ -386,13 +408,16 @@ namespace EarClipperLib
             List<ConnectionEdge> resultList = new List<ConnectionEdge>();
             foreach (var connectionEdge in p.GetPolygonCirculator())
             {
-                if (Misc.GetOrientation(connectionEdge.Prev.Origin, connectionEdge.Origin, connectionEdge.Next.Origin, Normal) != 1)
+                if (Misc.GetOrientation(connectionEdge.Prev.Origin, connectionEdge.Origin, connectionEdge.Next.Origin,
+                        Normal) != 1)
                     resultList.Add(connectionEdge);
             }
+
             return resultList;
         }
 
-        public bool RaySegmentIntersection(out Vector3m intersection, out Rational distanceSquared, Vector3m linePoint1, Vector3m lineVec1, Vector3m linePoint3, Vector3m linePoint4, Vector3m direction)
+        public bool RaySegmentIntersection(out Vector3m intersection, out ERational distanceSquared,
+            Vector3m linePoint1, Vector3m lineVec1, Vector3m linePoint3, Vector3m linePoint4, Vector3m direction)
         {
             var lineVec2 = linePoint4 - linePoint3;
             Vector3m lineVec3 = linePoint3 - linePoint1;
@@ -400,11 +425,11 @@ namespace EarClipperLib
             Vector3m crossVec3and2 = lineVec3.Cross(lineVec2);
 
             var res = Misc.PointLineDistance(linePoint3, linePoint4, linePoint1);
-            if (res == 0) // line and ray are collinear
+            if (res.IsZero) // line and ray are collinear
             {
                 var p = linePoint1 + lineVec1;
                 var res2 = Misc.PointLineDistance(linePoint3, linePoint4, p);
-                if (res2 == 0)
+                if (res2.IsZero)
                 {
                     var s = linePoint3 - linePoint1;
                     if (s.X == direction.X && s.Y == direction.Y && s.Z == direction.Z)
@@ -415,19 +440,22 @@ namespace EarClipperLib
                     }
                 }
             }
+
             //is coplanar, and not parallel
-            if (/*planarFactor == 0.0f && */crossVec1and2.LengthSquared() > 0)
+            if ( /*planarFactor == 0.0f && */crossVec1and2.LengthSquared().Sign > 0)
             {
                 var s = crossVec3and2.Dot(crossVec1and2) / crossVec1and2.LengthSquared();
-                if (s >= 0)
+                if (s.Sign >= 0)
                 {
                     intersection = linePoint1 + (lineVec1 * s);
                     distanceSquared = (lineVec1 * s).LengthSquared();
-                    if ((intersection - linePoint3).LengthSquared() + (intersection - linePoint4).LengthSquared() <=
-                        lineVec2.LengthSquared())
+                    if (((intersection - linePoint3).LengthSquared() + (intersection - linePoint4).LengthSquared())
+                        .CompareTo(lineVec2.LengthSquared()) <=
+                        0)
                         return true;
                 }
             }
+
             intersection = Vector3m.Zero();
             distanceSquared = 0;
             return false;
@@ -436,7 +464,7 @@ namespace EarClipperLib
 
     internal class Candidate
     {
-        internal Rational currentDistance = double.MaxValue;
+        internal ERational currentDistance = double.MaxValue;
         internal Vector3m I;
         internal ConnectionEdge Origin;
         internal int PolyIndex;
@@ -461,7 +489,8 @@ namespace EarClipperLib
         {
             unchecked
             {
-                return ((Next.Origin != null ? Next.Origin.GetHashCode() : 0) * 397) ^ (Origin != null ? Origin.GetHashCode() : 0);
+                return ((Next.Origin != null ? Next.Origin.GetHashCode() : 0) * 397) ^
+                       (Origin != null ? Origin.GetHashCode() : 0);
             }
         }
 
@@ -487,8 +516,6 @@ namespace EarClipperLib
             var list = (List<ConnectionEdge>)Origin.DynamicProperties.GetValue(PropertyConstants.IncidentEdges);
             list.Add(next);
         }
-
-
     }
 
     internal class Polygon
@@ -498,25 +525,29 @@ namespace EarClipperLib
 
         internal IEnumerable<ConnectionEdge> GetPolygonCirculator()
         {
-            if (Start == null) { yield break; }
+            if (Start == null)
+            {
+                yield break;
+            }
+
             var h = Start;
             do
             {
                 yield return h;
                 h = h.Next;
-            }
-            while (h != Start);
+            } while (h != Start);
         }
 
         internal void Remove(ConnectionEdge cur)
         {
             cur.Prev.Next = cur.Next;
             cur.Next.Prev = cur.Prev;
-            var incidentEdges = (List<ConnectionEdge>)cur.Origin.DynamicProperties.GetValue(PropertyConstants.IncidentEdges);
+            var incidentEdges =
+                (List<ConnectionEdge>)cur.Origin.DynamicProperties.GetValue(PropertyConstants.IncidentEdges);
             int index = incidentEdges.FindIndex(x => x.Equals(cur));
             Debug.Assert(index >= 0);
             incidentEdges.RemoveAt(index);
-            if (incidentEdges.Count == 0)
+            if (incidentEdges.Count==0)
                 PointCount--;
             if (cur == Start)
                 Start = cur.Prev;
@@ -532,6 +563,7 @@ namespace EarClipperLib
                     return true;
                 }
             }
+
             res = null;
             return false;
         }

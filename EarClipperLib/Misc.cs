@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.SolverFoundation.Common;
+﻿using PeterO.Numbers;
 
 namespace EarClipperLib
 {
@@ -13,7 +7,7 @@ namespace EarClipperLib
         public static int GetOrientation(Vector3m v0, Vector3m v1, Vector3m v2, Vector3m normal)
         {
             var res = (v0 - v1).Cross(v2 - v1);
-            if (res.LengthSquared() == 0)
+            if (res.LengthSquared().IsZero)
                 return 0;
             return -res.Dot(normal).Sign;
         }
@@ -93,7 +87,7 @@ namespace EarClipperLib
             return res0 != 1 && res1 != 1 && res2 != 1;
         }
 
-        public static Rational PointLineDistance(Vector3m p1, Vector3m p2, Vector3m p3)
+        public static ERational PointLineDistance(Vector3m p1, Vector3m p2, Vector3m p3)
         {
             return (p2 - p1).Cross(p3 - p1).LengthSquared();
         }
