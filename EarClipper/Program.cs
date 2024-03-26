@@ -44,7 +44,7 @@ namespace EarClipper
             res = earClipping.Result;
             PrintTriangles(res);
 
-            //Example 5
+            //Example 5: Polygon with hole
             points = new List<Vector3m>()
             {
                 new Vector3m(0, 0, 0), new Vector3m(5, 0, 0), new Vector3m(5, 5, 5), new Vector3m(3, 3, 3), new Vector3m(2, 6, 6), new Vector3m(1, 3, 3), new Vector3m(0, 5, 5)
@@ -57,6 +57,28 @@ namespace EarClipper
 
             earClipping = new EarClipping();
             earClipping.SetPoints(points, holes);
+            earClipping.Triangulate();
+            res = earClipping.Result;
+            PrintTriangles(res);
+
+
+            //Example 6: Non perfect coplanar polygon
+            points = new List<Vector3m>()
+            {
+                new Vector3m(-1, -1, 0), new Vector3m(-2, 2, 0), new Vector3m(0, 3, -2), new Vector3m(2, 0, -1), new Vector3m(1, 1, 0), new Vector3m(1, -1, 0)
+            };
+            earClipping.SetPoints(points);
+            earClipping.Triangulate();
+            res = earClipping.Result;
+            PrintTriangles(res);
+
+
+            // Example 7: Collinear vertices
+            points = new List<Vector3m>()
+            {
+                 new Vector3m(1, 0, 0), new Vector3m(0, -1, 0), new Vector3m(-1, -2, 0), new Vector3m(-2, -3, 0), new Vector3m(-1, -2, 0), new Vector3m(0, 1, 0)
+            };
+            earClipping.SetPoints(points);
             earClipping.Triangulate();
             res = earClipping.Result;
             PrintTriangles(res);
