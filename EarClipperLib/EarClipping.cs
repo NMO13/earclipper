@@ -138,13 +138,15 @@ namespace EarClipperLib
                         if (_mainPointList.PointCount > 2 && prevNoneConvexBefore && IsConvex(cur.Prev))
                         {
                             int index = nonConvexPoints.FindIndex(x => x == cur.Prev);
-                            nonConvexPoints.RemoveAt(index);
+                            if (index >= 0)
+                                nonConvexPoints.RemoveAt(index);
                         }
 
                         if (_mainPointList.PointCount > 2 && nextNoneConvexBefore && IsConvex(cur.Next))
                         {
                             int index = nonConvexPoints.FindIndex(x => x == cur.Next);
-                            nonConvexPoints.RemoveAt(index);
+                            if (index >= 0)
+                                nonConvexPoints.RemoveAt(index);
                         }
                         break;
                     }
