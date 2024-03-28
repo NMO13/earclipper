@@ -4,14 +4,14 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>EarClipper</PackageId>
-        <Version>1.1.1</Version>
+        <Version>1.2.0</Version>
         <Title>EarClipper</Title>
         <Authors />
-        <PackageProjectUrl>https://github.com/Lokarian/earclipper</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/Lokarian/earclipper/blob/master/LICENSE</PackageLicenseUrl>
-        <RepositoryUrl>https://github.com/Lokarian/earclipper</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/NMO13/earclipper</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/NMO13/earclipper/blob/master/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/NMO13/earclipper</RepositoryUrl>
         <PackageTags>Polygon</PackageTags>
-        <PackageReleaseNotes>netstandard2.0 release of fork of Github Repository https://github.com/NMO13/earclipper</PackageReleaseNotes>
+        <PackageReleaseNotes>netstandard2.0 release</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
