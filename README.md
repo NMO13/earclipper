@@ -10,9 +10,11 @@ Earclipper is an exact triangulation library for triangulating arbitrary convex/
 - Usable for 2D and 3D polygons
 - Robust: The internal datatype uses a rational arithmetic library. This means that internal computations and thus, the final result is always correct. Floating point problems are simply non-existent.
 - Holes: Supports arbitrary complicated and arbitrary many holes.
+- Coplanar Mapping: Support Mapping of slightly non-coplanar polygons (e.g. due to floating point errors) to a coplanar space. This is necessary for the triangulation algorithm to work correctly.
 
 ## Performance
-Performance is clearly improvable. The complexity inceases exponentially with the number of holes. Using some kind of binary partitioning (BSP-Tree, Octree) would speed up the algorithm dramatically.
+Performance is clearly improvable. The complexity inceases exponentially with the number of holes. Using some kind of binary partitioning (BSP-Tree, Octree) would speed up the algorithm dramatically.  
+Use the coplanar mapping only if necessary, as it is an O(n*log(n)) operation.
 
 ## Notes
 
@@ -54,3 +56,28 @@ earClipping.Triangulate();
 res = earClipping.Result;
 PrintTriangles(res);
 
+// example 4 
+//non perfectly coplanar polygon that gets its points mapped to a coplanar space
+points = new List<Vector3m>()
+{
+    new Vector3m(7197, -131, -6003),
+    new Vector3m(7197, 131, -6003),
+    new Vector3m(7103, 131, -6115),
+    new Vector3m(7103, 145, -6115),
+    new Vector3m(7296, 145, -5884),
+    new Vector3m(7296, 131, -5884),
+    new Vector3m(7202, 131, -5996),
+    new Vector3m(7202, -131, -5996),
+    new Vector3m(7296, -131, -5884),
+    new Vector3m(7296, -145, -5884),
+    new Vector3m(7103, -145, -6115),
+    new Vector3m(7103, -131, -6115)
+};
+points = EarClipping.GetCoplanarMapping(points, out var reverseMapping);
+earClipping = new EarClipping();
+earClipping.SetPoints(points);
+earClipping.Triangulate();
+res = earClipping.Result;
+res = EarClipping.RevertCoplanarityMapping(res, reverseMapping);
+PrintTriangles(res);
+```

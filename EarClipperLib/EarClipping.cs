@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using PeterO.Numbers;
 
 namespace EarClipperLib
@@ -58,6 +59,29 @@ namespace EarClipperLib
             }
 
             Normal = normal;
+        }
+
+        public static List<Vector3m> GetCoplanarMapping(List<Vector3m> points,
+            out Dictionary<Vector3m, Vector3m> reverseMappingDict)
+        {
+            var normals = points.Select((x, i) => (points[(i - 1 + points.Count) % points.Count] - x)
+                .Cross(points[(i + 1) % points.Count] - x)).ToList();
+            var directionGroups = normals.GroupBy(x => x, new DirectionEqualComparer()).ToList();
+            var dominantDirection = directionGroups.OrderByDescending(x => x.Count()).First().Key;
+            var pointOnPlane = normals.Zip(points, (x, y) => new { x, y }).First(x => x.x.Equals(dominantDirection)).y;
+            var mappedPoints = points
+                .Select(x => x.ProjectOntoPlane(dominantDirection, pointOnPlane)).ToList();
+            reverseMappingDict = points
+                .Zip(mappedPoints, (x, y) => new { x, y })
+                .Where(arg => !arg.x.Equals(arg.y))
+                .ToDictionary(arg => arg.x, arg => arg.y);
+            return mappedPoints;
+        }
+
+        public static List<Vector3m> RevertCoplanarityMapping(List<Vector3m> mappedPoints,
+            Dictionary<Vector3m, Vector3m> mapping)
+        {
+            return mappedPoints.Select(p => mapping.TryGetValue(p, out var mapped) ? mapped : p).ToList();
         }
 
         private void LinkAndAddToList(Polygon polygon, List<Vector3m> points)
@@ -494,7 +518,7 @@ namespace EarClipperLib
             }
         }
 
-        internal Vector3m Origin { get; private set; }
+        internal Vector3m Origin { get; set; }
         internal ConnectionEdge Prev;
         internal ConnectionEdge Next;
         internal Polygon Polygon { get; set; }
@@ -547,7 +571,7 @@ namespace EarClipperLib
             int index = incidentEdges.FindIndex(x => x.Equals(cur));
             Debug.Assert(index >= 0);
             incidentEdges.RemoveAt(index);
-            if (incidentEdges.Count==0)
+            if (incidentEdges.Count == 0)
                 PointCount--;
             if (cur == Start)
                 Start = cur.Prev;
