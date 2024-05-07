@@ -282,7 +282,7 @@ namespace EarClipperLib
         {
             ConnectionEdge P = null;
 
-            if (I.Origin.Origin.X.CompareTo(I.Origin.Next.Origin.X) > 0)
+            if (I.Origin.Origin.Dot(direction).CompareTo(I.Origin.Next.Origin.Dot(direction)) > 0)
             {
                 P = I.Origin;
             }
