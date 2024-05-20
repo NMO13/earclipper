@@ -54,8 +54,8 @@ namespace EarClipperTest
             PrintTriangles(res);
             
             
-            // example 5 
-            //non coplanar polygon that gets its points mapped to a coplanar space
+            //Example 5 
+            // non coplanar polygon that gets its points mapped to a coplanar space
             points = new List<Vector3m>()
             {
                 new Vector3m(7197, -131, -6003),
@@ -78,6 +78,33 @@ namespace EarClipperTest
             res = earClipping.Result;
             res = EarClipping.RevertCoplanarityMapping(res, reverseMapping);
             PrintTriangles(res);
+
+            //Example 6 
+            points = new List<Vector3m>()
+            {
+                new Vector3m(0, 0, 0),
+                new Vector3m(8, 0, 0),
+                new Vector3m(8, 4, 0),
+                new Vector3m(0, 4, 0)
+            };
+
+            // specify holes in CW order
+            holes = new List<List<Vector3m>>();
+            Vector3m[] hole2 =
+            {
+                new Vector3m(7, 2, 0),
+                new Vector3m(6, 1, 0),
+                new Vector3m(4, 2, 0),
+                new Vector3m(5, 3, 0),
+            };
+            holes.Add(hole2.ToList());
+
+            earClipping = new EarClipping();
+            earClipping.SetPoints(points, holes);
+            earClipping.Triangulate();
+            res = earClipping.Result;
+            PrintTriangles(res);
+
             Console.ReadKey();
         }
 
