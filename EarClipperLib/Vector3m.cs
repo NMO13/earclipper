@@ -118,6 +118,18 @@ namespace EarClipperLib
             return Dot(this);
         }
 
+        public double RoughAngleBetween(Vector3m a)
+        {
+            var dot = Dot(a);
+            var len = Length() * a.Length();
+            if (len == 0)
+            {
+                return 0;
+            }
+
+            return System.Math.Acos(dot.ToDouble() / len);
+        }
+
         public Vector3m ShortenByLargestComponent()
         {
             if (this.LengthSquared().IsZero)
@@ -160,7 +172,7 @@ namespace EarClipperLib
                 return false;
             }
 
-            return X.CompareTo(other.X)==0 && Y.CompareTo(other.Y)==0 && Z.CompareTo(other.Z)==0;
+            return X.CompareTo(other.X) == 0 && Y.CompareTo(other.Y) == 0 && Z.CompareTo(other.Z) == 0;
         }
 
         public override int GetHashCode()
