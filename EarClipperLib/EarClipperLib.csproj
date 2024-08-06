@@ -4,7 +4,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>EarClipper</PackageId>
-        <Version>1.2.0</Version>
+        <Version>1.2.1</Version>
         <Title>EarClipper</Title>
         <Authors />
         <PackageProjectUrl>https://github.com/NMO13/earclipper</PackageProjectUrl>

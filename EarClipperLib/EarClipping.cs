@@ -66,11 +66,10 @@ namespace EarClipperLib
         {
             var normals = points.Select((x, i) => (points[(i - 1 + points.Count) % points.Count] - x)
                 .Cross(points[(i + 1) % points.Count] - x)).ToList();
-            var directionGroups = normals.GroupBy(x => x, new DirectionEqualComparer()).ToList();
-            var dominantDirection = directionGroups.OrderByDescending(x => x.Count()).First().Key;
-            var pointOnPlane = normals.Zip(points, (x, y) => new { x, y }).First(x => x.x.Equals(dominantDirection)).y;
+            var averageNormal = normals.Aggregate((x, y) => x + y) / normals.Count;
+            var samplePoint = points[0];
             var mappedPoints = points
-                .Select(x => x.ProjectOntoPlane(dominantDirection, pointOnPlane)).ToList();
+                .Select(x => x.ProjectOntoPlane(averageNormal, samplePoint)).ToList();
             reverseMappingDict = points
                 .Zip(mappedPoints, (x, y) => new { x, y })
                 .Where(arg => !arg.x.Equals(arg.y))
